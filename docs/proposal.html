@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <title>Creating a panorama from a panning video</title>
+    <style type="text/css">
+    table.timeline th, table.timeline td {
+        border: 1px solid black;
+    }
+    td {
+        padding: 5px;
+    }
+    </style>
+</head>
+<body>
+<div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="index.html">CS-534 Project</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" href="">Proposal</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="midterm.html">Mid-Term Report</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="final.html">Final Project</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+</div>
+<div class="w-100 pl-2 text-center">
+    <h3>Project Proposal: Video to Panorama</h3>
+</div>
+<br />
+<div class="pl-2">
+    <h4>Authors</h4>
+    <table class="m-0">
+        <tr>
+          <td>Name: Jason Mohoney</td>
+          <td>NetID: mohoney2</td>
+          <td>Email: mohoney2@wisc.edu</td>
+        </tr>
+        <tr>
+          <td>Name: Joshua Stephani</td>
+          <td>NetID: jstephani2</td>
+          <td>Email: jstephani2@wisc.edu</td>
+        </tr>
+        <tr>
+          <td>Name: Max Vrany</td>
+          <td>NetID: mvrany</td>
+          <td>Email: mvrany@wisc.edu</td>
+        </tr>
+    </table>
+    <h4 class="mt-4">Problem</h4>
+    <p>Videos are just a sequence of images. A panorama can be created from a sequence of images. We are simply trying to create a panorama from a video that features a pan sequence. We will need to figure out which frames will need to be extracted, how to extract them, what processing will be needed to optimize the extracted frames and how to merge them.</p>
+    <p>Figuring out which frames need to be extracted is critical. We need to make sure that we have enough frames to assemble a complete image. (This may involve deciding how much missing areas are acceptable.) At the same time, extracting too many frames could result in too much redundant information and could increase computational complexity beyond an acceptable level.</p>
+    <p>Processing extracted frames may provide additional details in the images that may improve the quality and performance of the merging process.</p>
+    <p>The design of the merging process will be critical to ensure the process completes in a timely manner and accurately assembles the extracted frames.</p>
+    <h4>Why we want to solve this problem</h4>
+    <p>We have selected a paper [1] that implements a solution to the problem we would like to solve. A high level overview of the authors’ implementation is as follows:</p>
+    <ol>
+      <li>Take two images and perform Harris Corner Detection to extract features from the images.</li>
+      <li>Match the corners from one image to the corners in another image.</li>
+      <li>The images are stitched together by calculating the affine transformation parameters.</li>
+    </ol>
+    <p>In addition to an implementation to follow, the paper gives a set of open questions we could seek to answer.</p>
+    <ol>
+        <li>How to handle changes in lighting conditions?</li>
+        <li>What happens in case there are a lot of movements in the frame?</li>
+        <li>Besides the camera shake, can other fast movements be well handled? If so, how much overlapping between adjacent frames is considered adequate?</li>
+    </ol>
+    <p>Minimally we would like to complete the implementation described in the paper and if enough time, tackle one of the open questions listed above.</p>
+    <p>[1] Minchen Zhu, Weizhi Wang, Binghan Liu, and Jingshan Huang, “Efficient video panoramic image stitching based on an improved selection of harris corners and a multiple-constraint corner matching,” PloS one, vol. 8, no. 12, pp. e81182, 2013.<a href="https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0081182&type=printable">https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0081182&type=printable</a></p>
+    <h4>Project Timeline</h4>
+    <table class="timeline">
+      <tr>
+        <th>Task</th>
+        <th>Description</th>
+        <th>Date</th>
+      </tr>
+      <tr>
+        <td>Create Webpage</td>
+        <td>Add proposal and wiki.</td>
+        <td>9/26</td>
+      </tr>
+      <tr>
+        <td>Initialize Project</td>
+        <td>Plan necessary components, dependencies, tasks, and divide workloads</td>
+        <td>10/1</td>
+      </tr>
+      <tr>
+        <td>Input Preprocessing</td>
+        <td>Implement the preprocessing portion of the project.</td>
+        <td>10/8</td>
+      </tr>
+      <tr>
+        <td>Feature Extraction / Matching</td>
+        <td>Implement image feature extraction and match features in pairs.</td>
+        <td>10/18</td>
+      </tr>
+      <tr>
+        <td>Stitching</td>
+        <td>Implement the stitching of images from the matched feature pairs.</td>
+        <td>10/29</td>
+      </tr>
+      <tr>
+        <td>Minimum Viable Product</td>
+        <td>MVP should be able to take two images and stitch them together in one.</td>
+        <td>10/31</td>
+      </tr>
+      <tr>
+        <td>Code Cleanup / Additional Features</td>
+        <td>Perform testing, bug fixes, and code cleanup. Add the functionality for stitching more than two images. Tackle an open question.</td>
+        <td>10/31 - 11/21</td>
+      </tr>
+      <tr>
+        <td>Code Completion</td>
+        <td>Project code completion.</td>
+        <td>11/21</td>
+      </tr>
+      <tr>
+        <td>Results Gathering</td>
+        <td>Gather results based on different input videos / images.</td>
+        <td>11/30</td>
+      </tr>
+      <tr>
+        <td>Final Presentation</td>
+        <td>Present project and results to class.</td>
+        <td>12/3</td>
+      </tr>
+      <tr>
+        <td>Complete Webpage</td>
+        <td>Post project details on website along with results, code, etc...</td>
+        <td>12/12</td>
+      </tr>
+    </table>
+    <br />
+</div>
+</body>
+</html>
