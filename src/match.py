@@ -52,9 +52,7 @@ def corner_sim(Limg, Rimg, Lfeatures, Rfeatures):
             if xl >= xr and np.abs(yr -yl) < YTHRESH and np.abs((Rr - Rl)/Rl) < RTHRESH:
                 corr = calc_corr(xl, yl, xr, yr, Limg, Rimg)
                 if (np.abs(corr) > CORRTHRESH):
-                    print(xl,xr)
                     C_mat[i,j] = np.abs(calc_corr(xl, yl, xr, yr, Limg, Rimg))
-                    print(C_mat[i,j])
             j+=1
         i+=1
     return C_mat

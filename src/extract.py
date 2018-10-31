@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import bottleneck as bn
-from src import match
 
 NUM_HEIGHT = 10
 NUM_WIDTH = 10

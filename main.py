@@ -6,7 +6,7 @@ from src import match
 from src import stitch
 
 def main(Limg_name, Rimg_name):
-    
+
     Limg = cv2.imread(Limg_name)
     Rimg = cv2.imread(Rimg_name)
 
