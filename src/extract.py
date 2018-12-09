@@ -1,21 +1,13 @@
 import cv2
 import numpy as np
 import bottleneck as bn
+import src.match as match
 
 NUM_HEIGHT = 10
 NUM_WIDTH = 10
 
 TAU = 10
 NUM_CORNERS = 1000
-
-DSIZE = 8
-
-YTHRESH = 200
-RTHRESH = .05
-CORRTHRESH = .9
-
-LENGTH_THRESH = 10
-SLOPE_THRESH = 5
 
 def sigmoid(var, max, min, mean):
     return 1 / (1 + np.exp(-TAU*(var-mean)/(max - min)))
@@ -27,11 +19,18 @@ def top_n_indexes(arr, n):
     return [divmod(i, width) for i in idx]
 
 
+def get_descriptor(img, x, y):
+    y0 = int(x - match.DSIZE/2)
+    x0 = int(y - match.DSIZE/2)
+    window = img[x0:x0+match.DSIZE, y0:y0+match.DSIZE]
+    return window
+
+
 def get_features(img):
     height = img.shape[0]
     width = img.shape[1]
-    box_height = int(height / NUM_HEIGHT)
-    box_width = int(width / NUM_WIDTH)
+    box_height = (height / NUM_HEIGHT)
+    box_width = (width / NUM_WIDTH)
 
     vars = np.zeros((NUM_HEIGHT,NUM_WIDTH))
     sigs = np.zeros((NUM_HEIGHT,NUM_WIDTH))
@@ -42,7 +41,7 @@ def get_features(img):
     for y in np.arange(0,height, box_height):
         j = 0
         for x in np.arange(0, width, box_width):
-            vars[i,j] = np.var(img[y:y+box_height, x:x+box_width])
+            vars[i,j] = np.var(img[int(y):int(y+box_height), int(x):int(x+box_width)])
             j += 1
         i += 1
 
@@ -65,7 +64,7 @@ def get_features(img):
         j = 0
         for x in np.arange(0, width, box_width):
             num = int(NUM_CORNERS*weights[i,j])
-            corners = cv2.cornerHarris(img[y:y+box_height,x:x+box_width],2,31,0.04)
+            corners = cv2.cornerHarris(img[int(y):int(y+box_height), int(x):int(x+box_width)],2,31,0.04)
             if num == 0:
                 break
             idxs = top_n_indexes(corners, num)
