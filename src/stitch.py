@@ -1,38 +1,79 @@
 import cv2
 import numpy as np
 
-reprojThresh=5
+reprojThresh = 5
 
-def stitch(img1, img2, H):
-    # Get width and height of input images
-    w1, h1 = img1.shape[:2]
-    w2, h2 = img2.shape[:2]
 
-    # Get the canvas dimesions
-    img1_dims = np.float32([[0, 0], [0, w1], [h1, w1], [h1, 0]]).reshape(-1, 1, 2)
+def paste_image(base, img):
+    h, w = img.shape[:2]
+    dest_slice = np.s_[0:h, 0:w]
+    dest = base[dest_slice]
+    mask = (255 - img[..., 3])
+    dest_bg = cv2.bitwise_and(dest, dest, mask=mask)
+    dest = cv2.add(dest_bg, img)
+    base[dest_slice] = dest
+
+
+def findDimensions(img, H):
+    w2, h2 = img.shape[:2]
     img2_dims_temp = np.float32([[0, 0], [0, w2], [h2, w2], [h2, 0]]).reshape(-1, 1, 2)
+    img_dims = cv2.perspectiveTransform(img2_dims_temp, H)
 
-    # Get relative perspective of second image
-    img2_dims = cv2.perspectiveTransform(img2_dims_temp, H)
+    [min_x, min_y] = np.int32(img_dims.min(axis=0).ravel() - 0.5)
+    [max_x, max_y] = np.int32(img_dims.max(axis=0).ravel() + 0.5)
 
-    # Resulting dimensions
-    result_dims = np.concatenate((img1_dims, img2_dims), axis=0)
+    return (min_x, min_y, max_x, max_y)
 
-    # Getting images together
-    # Calculate dimensions of match points
-    [x_min, y_min] = np.int32(result_dims.min(axis=0).ravel() - 0.5)
-    [x_max, y_max] = np.int32(result_dims.max(axis=0).ravel() + 0.5)
 
-    # Create output array after affine transformation
-    transform_dist = [-x_min, -y_min]
-    transform_array = np.array([[1, 0, transform_dist[0]],
-                                [0, 1, transform_dist[1]],
-                                [0, 0, 1]])
+def stitch(imgs, H_map):
+    # calculate panorama size
+    tot_min_x = 1000
+    tot_min_y = 1000
+    tot_max_x = 0
+    tot_max_y = 0
 
-    # Warp images to get the resulting image
-    result_img = cv2.warpPerspective(img2, transform_array.dot(H) ,(x_max - x_min, y_max - y_min))
-    result_img[transform_dist[1]:w1 + transform_dist[1],
-    transform_dist[0]:h1 + transform_dist[0]] = img1
+    num_images = len(imgs)
 
-    # Return the result
-    return result_img
+    for i in range(0, len(H_map)):
+        curr_img = imgs[i]
+        (min_x, min_y, max_x, max_y) = findDimensions(curr_img, np.linalg.inv(H_map[i]))
+
+        tot_min_x = np.floor(np.minimum(min_x, tot_min_x))
+        tot_min_y = np.floor(np.minimum(min_y, tot_min_y))
+        tot_max_x = np.ceil(np.maximum(max_x, tot_max_x))
+        tot_max_y = np.ceil(np.maximum(max_y, tot_max_y))
+
+    pan_height = tot_max_y - tot_min_y
+    pan_width = tot_max_x - tot_min_x
+
+    pan_size = (int(pan_height), int(pan_width))
+
+    canvas = np.zeros((pan_size[0], pan_size[1], 4)).astype("uint8")
+
+    # warp images
+    warped = []
+
+    for i in range(0, num_images):
+        img = imgs[i]
+
+        (min_x, min_y, max_x, max_y) = findDimensions(img, np.linalg.inv(H_map[i]))
+
+        max_x = max(tot_max_x, max_x)
+        max_y = max(tot_max_y, max_y)
+        min_x = min(tot_min_x, min_x)
+        min_y = min(tot_min_y, min_y)
+
+        curr_width = max_x - min_x
+        curr_height = max_y - min_y
+
+        curr_size = (int(curr_width), int(curr_height))
+
+        new_mat = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+
+        new_img = cv2.warpPerspective(imgs[i], new_mat.dot(np.linalg.inv(H_map[i])), curr_size)
+        new_img = new_img.astype("uint8")
+        paste_image(canvas, new_img)
+
+        warped.append(new_img)
+
+    return canvas

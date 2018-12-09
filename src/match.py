@@ -12,32 +12,35 @@ CORRTHRESH = .95
 
 REPROJ_THRESH = 4
 
+
 def get_descriptor(img, x, y):
-    y0 = int(x - DSIZE/2)
-    x0 = int(y - DSIZE/2)
-    window = img[x0:x0+DSIZE, y0:y0+DSIZE]
+    y0 = int(x - DSIZE / 2)
+    x0 = int(y - DSIZE / 2)
+    window = img[x0:x0 + DSIZE, y0:y0 + DSIZE]
     return window
+
 
 def calc_corr(xl, yl, xr, yr, Limg, Rimg):
     Lwindow = get_descriptor(Limg, xl, yl)
     Rwindow = get_descriptor(Rimg, xr, yr)
-    if Lwindow.shape != (DSIZE,DSIZE) or Rwindow.shape != (DSIZE,DSIZE):
+    if Lwindow.shape != (DSIZE, DSIZE) or Rwindow.shape != (DSIZE, DSIZE):
         return 0
     Lmean = np.mean(Lwindow)
     Rmean = np.mean(Rwindow)
     top = 0
-    for u in range(0,DSIZE):
-        for v in range(0,DSIZE):
-            top += (Lwindow[u,v] - Lmean) * (Rwindow[u,v] - Rmean)
+    for u in range(0, DSIZE):
+        for v in range(0, DSIZE):
+            top += (Lwindow[u, v] - Lmean) * (Rwindow[u, v] - Rmean)
 
     Lbottom = 0
     Rbottom = 0
-    for u in range(0,DSIZE):
-        for v in range(0,DSIZE):
-            Lbottom += (Lwindow[u,v] - Lmean)**2
-            Rbottom += (Rwindow[u,v] - Rmean)**2
+    for u in range(0, DSIZE):
+        for v in range(0, DSIZE):
+            Lbottom += (Lwindow[u, v] - Lmean) ** 2
+            Rbottom += (Rwindow[u, v] - Rmean) ** 2
 
     return top / (np.sqrt(Lbottom * Rbottom))
+
 
 def nearest_neighbors_kd_tree(x, y, k):
     x, y = map(np.asarray, (x, y))
@@ -54,12 +57,12 @@ def nearest_neighbors_kd_tree(x, y, k):
                 break
     return nearest_neighbor
 
+
 def corner_sim(Limg, Rimg, Lfeatures, Rfeatures):
     l_len = len(Lfeatures)
     r_len = len(Rfeatures)
 
     C_mat = np.zeros((l_len, r_len))
-
 
     i = 0
     stime = time.time()
@@ -75,26 +78,24 @@ def corner_sim(Limg, Rimg, Lfeatures, Rfeatures):
             Rr = Rfeature[2]
 
             # NEED BETTER CONSTRAINTS
-            if xl >= xr and np.abs(yr -yl) < YTHRESH and np.abs((Rr - Rl)/Rl) < RTHRESH:
+            if xl >= xr and np.abs(yr - yl) < YTHRESH and np.abs((Rr - Rl) / Rl) < RTHRESH:
                 count += 1
                 corr = calc_corr(xl, yl, xr, yr, Limg, Rimg)
                 if (np.abs(corr) > CORRTHRESH):
-                    C_mat[i,j] = np.abs(calc_corr(xl, yl, xr, yr, Limg, Rimg))
-            j+=1
-        i+=1
+                    C_mat[i, j] = np.abs(calc_corr(xl, yl, xr, yr, Limg, Rimg))
+            j += 1
+        i += 1
     etime = time.time()
     print(count)
-    print("CORR MAT took " +  str(etime - stime))
+    print("CORR MAT took " + str(etime - stime))
     return C_mat
 
 
 def get_matches(Limg, Rimg, Lfeatures, Rfeatures, feature_method):
-
     if feature_method == "custom":
         return get_matches_custom(Limg, Rimg, Lfeatures, Rfeatures)
     elif feature_method == "sift":
         return get_matches_SIFT(Lfeatures[0], Rfeatures[0], Lfeatures[1], Rfeatures[1])
-
 
 
 def get_matches_custom(Limg, Rimg, Lfeatures, Rfeatures):
@@ -124,6 +125,7 @@ def get_matches_custom(Limg, Rimg, Lfeatures, Rfeatures):
             matchesR[int(matchL)] = 0
 
     return get_homography(matchesL, Lfeatures, Rfeatures)
+
 
 def get_matches_SIFT(lkp, rkp, Lfeatures, Rfeatures):
     # compute the raw matches and initialize the list of actual
@@ -155,7 +157,6 @@ def get_matches_SIFT(lkp, rkp, Lfeatures, Rfeatures):
 
     # otherwise, no homograpy could be computed
     return None
-
 
 
 def get_homography(matches, Lfeatures, Rfeatures):
