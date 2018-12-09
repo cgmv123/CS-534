@@ -3,7 +3,7 @@ import numpy as np
 
 reprojThresh=5
 
-def get_stitched_image(img1, img2, H):
+def stitch(img1, img2, H):
     # Get width and height of input images
     w1, h1 = img1.shape[:2]
     w2, h2 = img2.shape[:2]
@@ -36,22 +36,3 @@ def get_stitched_image(img1, img2, H):
 
     # Return the result
     return result_img
-
-def stitch(matches, Limg, Rimg, Lfeatures, Rfeatures):
-    ptsL = []
-    ptsR = []
-
-    i = 0
-    for match in matches:
-        if match != 0:
-            xl = Lfeatures[i][0]
-            yl = Lfeatures[i][1]
-            ptsL.append((xl, yl))
-            xr = Rfeatures[int(match)][0]
-            yr = Rfeatures[int(match)][1]
-            ptsR.append((xr, yr))
-        i += 1
-
-    (H, status) = cv2.findHomography(np.asarray(ptsL), np.asarray(ptsR), cv2.RANSAC, reprojThresh)
-
-    return get_stitched_image(Rimg, Limg, H)
