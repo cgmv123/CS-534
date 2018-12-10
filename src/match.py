@@ -10,7 +10,7 @@ YTHRESH = 100
 RTHRESH = .05
 CORRTHRESH = .95
 
-REPROJ_THRESH = 4
+REPROJ_THRESH = 12
 
 
 def get_descriptor(img, x, y):
@@ -132,7 +132,7 @@ def get_matches_SIFT(lkp, rkp, Lfeatures, Rfeatures):
     # matches
     ratio = .75
     matcher = cv2.DescriptorMatcher_create("BruteForce")
-    rawMatches = matcher.knnMatch(Lfeatures, Rfeatures, 2)
+    rawMatches = matcher.knnMatch(Lfeatures, Rfeatures,2)
     matches = []
 
     # loop over the raw matches

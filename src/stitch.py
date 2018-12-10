@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
+import oct2py
 
-reprojThresh = 5
+reprojThresh = 15
 
 
 def paste_image(base, img):
@@ -27,10 +28,10 @@ def findDimensions(img, H):
 
 def stitch(imgs, H_map):
     # calculate panorama size
-    tot_min_x = 1000
-    tot_min_y = 1000
-    tot_max_x = 0
-    tot_max_y = 0
+    tot_min_x = np.inf
+    tot_min_y = np.inf
+    tot_max_x = -np.inf
+    tot_max_y = -np.inf
 
     num_images = len(imgs)
 

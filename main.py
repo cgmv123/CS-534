@@ -4,6 +4,7 @@ from src import extract
 from src import match
 from src import stitch
 import numpy as np
+from src import input
 
 
 def main():
@@ -18,6 +19,7 @@ def main():
             first_arg = False
         else:
             img = cv2.imread(img_name)
+            img = input.cylindricalWarp(img)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA)
             gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             imgs.append(img)
@@ -48,10 +50,12 @@ def main():
     H_map = []
     H_map.append(np.identity(3))
     for i in range(0, len(Hs)):
-        H_map.append(np.matmul(H_map[i], Hs[i]))
+        H_map.append(np.dot(Hs[i], H_map[i]))
 
     # stitch images
     result = stitch.stitch(imgs, H_map)
+
+    print(result.shape)
 
     cv2.imwrite('out.png', result)
 

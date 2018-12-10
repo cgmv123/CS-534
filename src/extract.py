@@ -93,7 +93,7 @@ def get_features_GFTT(img):
 
 
 def get_features_SIFT(img):
-    descriptor = cv2.xfeatures2d.SIFT_create()
+    descriptor = cv2.xfeatures2d.SIFT_create(300, 5)
     (kps, features) = descriptor.detectAndCompute(img, None)
     return [kps, features]
 
