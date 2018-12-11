@@ -1,11 +1,8 @@
 import cv2
 import numpy as np
-import oct2py
-
-reprojThresh = 15
 
 
-def paste_image(base, img):
+def place_image(base, img):
     h, w = img.shape[:2]
     dest_slice = np.s_[0:h, 0:w]
     dest = base[dest_slice]
@@ -23,7 +20,7 @@ def findDimensions(img, H):
     [min_x, min_y] = np.int32(img_dims.min(axis=0).ravel() - 0.5)
     [max_x, max_y] = np.int32(img_dims.max(axis=0).ravel() + 0.5)
 
-    return (min_x, min_y, max_x, max_y)
+    return min_x, min_y, max_x, max_y
 
 
 def stitch(imgs, H_map):
@@ -49,7 +46,7 @@ def stitch(imgs, H_map):
 
     pan_size = (int(pan_height), int(pan_width))
 
-    canvas = np.zeros((pan_size[0], pan_size[1], 4)).astype("uint8")
+    final_img = np.zeros((pan_size[0], pan_size[1], 4)).astype("uint8")
 
     # warp images
     warped = []
@@ -69,12 +66,11 @@ def stitch(imgs, H_map):
 
         curr_size = (int(curr_width), int(curr_height))
 
-        new_mat = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 
-        new_img = cv2.warpPerspective(imgs[i], new_mat.dot(np.linalg.inv(H_map[i])), curr_size)
+        new_img = cv2.warpPerspective(imgs[i], np.linalg.inv(H_map[i]), curr_size)
         new_img = new_img.astype("uint8")
-        paste_image(canvas, new_img)
+        place_image(final_img, new_img)
 
         warped.append(new_img)
 
-    return canvas
+    return final_img

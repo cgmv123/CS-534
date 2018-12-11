@@ -3,11 +3,31 @@ import numpy as np
 import bottleneck as bn
 import src.match as match
 
+# CUSTOM
 NUM_HEIGHT = 10
 NUM_WIDTH = 10
 
 TAU = 10
 NUM_CORNERS = 1000
+
+# HARRIS
+
+# GFT
+
+
+# SIFT
+N_FEATURES = 0
+N_OCTAVE_LAYERS_SIFT = 3
+CONTRAST_THRESHOLD = 0.04
+EDGE_THRESHOLD = 10
+SIGMA = 1.6
+
+# SURF
+HESSIAN_THRESHOLD = 100
+N_OCTAVES = 4
+N_OCTAVE_LAYERS_SURF = 3
+EXTENDED = False
+UPRIGHT = True
 
 
 def sigmoid(var, max, min, mean):
@@ -32,6 +52,8 @@ def get_features(img, feature_method):
         return get_features_custom(img)
     elif feature_method == "sift":
         return get_features_SIFT(img)
+    elif feature_method == "surf":
+        return get_features_SURF(img)
 
 
 def get_features_custom(img):
@@ -93,22 +115,12 @@ def get_features_GFTT(img):
 
 
 def get_features_SIFT(img):
-    descriptor = cv2.xfeatures2d.SIFT_create(300, 5)
-    (kps, features) = descriptor.detectAndCompute(img, None)
+    sift = cv2.xfeatures2d.SIFT_create(N_FEATURES, N_OCTAVE_LAYERS_SIFT, CONTRAST_THRESHOLD, EDGE_THRESHOLD, SIGMA)
+    (kps, features) = sift.detectAndCompute(img, None)
     return [kps, features]
 
 
 def get_features_SURF(img):
-    return
-
-
-def get_features_FAST(img):
-    return
-
-
-def get_features_BREIF(img):
-    return
-
-
-def get_features_ORB(img):
-    return
+    surf = cv2.xfeatures2d.SURF_create(HESSIAN_THRESHOLD, N_OCTAVES, N_OCTAVE_LAYERS_SURF, EXTENDED, UPRIGHT)
+    (kps, features) = surf.detectAndCompute(img, None)
+    return [kps, features]

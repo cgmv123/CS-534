@@ -7,8 +7,8 @@ import numpy as np
 from src import input
 
 
-def main():
-    feature_method = "sift"
+def main(frames=None):
+    feature_method = "surf"
 
     # read in images
     imgs = []
@@ -24,6 +24,14 @@ def main():
             gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             imgs.append(img)
             gray_imgs.append(gray_img)
+
+    # for frame in frames:
+    #     img = frame
+    #     img = input.cylindricalWarp(img)
+    #     img = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA)
+    #     gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #     imgs.append(img)
+    #     gray_imgs.append(gray_img)
 
     num_images = len(imgs)
 

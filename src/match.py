@@ -2,15 +2,15 @@ import numpy as np
 import time
 import cv2
 import scipy
-from pprint import pprint
 
+# CUSTOM / GFFT
 DSIZE = 8
-
 YTHRESH = 100
 RTHRESH = .05
 CORRTHRESH = .95
 
 REPROJ_THRESH = 12
+RATIO = .75
 
 
 def get_descriptor(img, x, y):
@@ -40,22 +40,6 @@ def calc_corr(xl, yl, xr, yr, Limg, Rimg):
             Rbottom += (Rwindow[u, v] - Rmean) ** 2
 
     return top / (np.sqrt(Lbottom * Rbottom))
-
-
-def nearest_neighbors_kd_tree(x, y, k):
-    x, y = map(np.asarray, (x, y))
-    tree = scipy.spatial.cKDTree(y[:, None])
-    ordered_neighbors = tree.query(x[:, None], k)[1]
-    nearest_neighbor = np.empty((len(x),), dtype=np.intp)
-    nearest_neighbor.fill(-1)
-    used_y = set()
-    for j, neigh_j in enumerate(ordered_neighbors):
-        for k in neigh_j:
-            if k not in used_y:
-                nearest_neighbor[j] = k
-                used_y.add(k)
-                break
-    return nearest_neighbor
 
 
 def corner_sim(Limg, Rimg, Lfeatures, Rfeatures):
@@ -95,7 +79,9 @@ def get_matches(Limg, Rimg, Lfeatures, Rfeatures, feature_method):
     if feature_method == "custom":
         return get_matches_custom(Limg, Rimg, Lfeatures, Rfeatures)
     elif feature_method == "sift":
-        return get_matches_SIFT(Lfeatures[0], Rfeatures[0], Lfeatures[1], Rfeatures[1])
+        return get_matches_SIFT_SURF(Lfeatures[0], Rfeatures[0], Lfeatures[1], Rfeatures[1])
+    elif feature_method == "surf":
+        return get_matches_SIFT_SURF(Lfeatures[0], Rfeatures[0], Lfeatures[1], Rfeatures[1])
 
 
 def get_matches_custom(Limg, Rimg, Lfeatures, Rfeatures):
@@ -127,19 +113,18 @@ def get_matches_custom(Limg, Rimg, Lfeatures, Rfeatures):
     return get_homography(matchesL, Lfeatures, Rfeatures)
 
 
-def get_matches_SIFT(lkp, rkp, Lfeatures, Rfeatures):
+def get_matches_SIFT_SURF(lkp, rkp, Lfeatures, Rfeatures):
     # compute the raw matches and initialize the list of actual
     # matches
-    ratio = .75
     matcher = cv2.DescriptorMatcher_create("BruteForce")
-    rawMatches = matcher.knnMatch(Lfeatures, Rfeatures,2)
+    rawMatches = matcher.knnMatch(Lfeatures, Rfeatures, 2)
     matches = []
 
     # loop over the raw matches
     for m in rawMatches:
         # ensure the distance is within a certain ratio of each
         # other (i.e. Lowe's ratio test)
-        if len(m) == 2 and m[0].distance < m[1].distance * ratio:
+        if len(m) == 2 and m[0].distance < m[1].distance * RATIO:
             matches.append((m[0].trainIdx, m[0].queryIdx))
 
     # computing a homography requires at least 4 matches
@@ -150,6 +135,9 @@ def get_matches_SIFT(lkp, rkp, Lfeatures, Rfeatures):
 
         # compute the homography between the two sets of points
         (H, status) = cv2.findHomography(ptsA, ptsB, cv2.RANSAC, REPROJ_THRESH)
+
+
+
 
         # return the matches along with the homograpy matrix
         # and status of each matched point

@@ -1,5 +1,8 @@
 import cv2
 import numpy as np
+import math
+
+WARP_PARAM = 800
 
 
 def equalize_histogram_color(img):
@@ -9,11 +12,12 @@ def equalize_histogram_color(img):
     return img
 
 
+# # TODO CLEANUP
 def cylindricalWarp(img):
     """This function returns the cylindrical warp for a given image and intrinsics matrix K"""
 
     h_, w_ = img.shape[:2]
-    K = np.array([[800, 0, w_ / 2], [0, 800, h_ / 2], [0, 0, 1]])  # mock intrinsics
+    K = np.array([[WARP_PARAM, 0, w_ / 2], [0, WARP_PARAM, h_ / 2], [0, 0, 1]])  # mock intrinsics
     # pixel coordinates
     y_i, x_i = np.indices((h_, w_))
     X = np.stack([x_i, y_i, np.ones_like(x_i)], axis=-1).reshape(h_ * w_, 3)  # to homog
@@ -30,5 +34,5 @@ def cylindricalWarp(img):
 
     img_rgba = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA)  # for transparent borders...
     # warp the image according to cylindrical coords
-    return cv2.remap(img_rgba, B[:, :, 0].astype(np.float32), B[:, :, 1].astype(np.float32), cv2.INTER_AREA,
-                     borderMode=cv2.BORDER_TRANSPARENT)
+    return cv2.remap(img_rgba, B[:, :, 0].astype(np.float32), B[:, :, 1].astype(np.float32), cv2.INTER_AREA, borderMode=cv2.BORDER_TRANSPARENT)
+
