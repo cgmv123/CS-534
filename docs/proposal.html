@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <title>Creating a panorama from a panning video</title>
+    <title>Video>>Pano: Proposal</title>
     <style type="text/css">
     table.timeline th, table.timeline td {
         border: 1px solid black;
@@ -17,7 +17,7 @@
 <body>
 <div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="index.html">CS-534 Project</a>
+      <a class="navbar-brand" href="index.html">Video<i class="fas fa-angle-double-right"></i>Pano</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -30,7 +30,7 @@
             <a class="nav-link" href="midterm.html">Mid-Term Report</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="final.html">Final Project</a>
+            <a class="nav-link" href="final.html">Final Product</a>
           </li>
         </ul>
       </div>
@@ -59,11 +59,13 @@
           <td>Email: mvrany@wisc.edu</td>
         </tr>
     </table>
+    <hr/>
     <h4 class="mt-4">Problem</h4>
     <p>Videos are just a sequence of images. A panorama can be created from a sequence of images. We are simply trying to create a panorama from a video that features a pan sequence. We will need to figure out which frames will need to be extracted, how to extract them, what processing will be needed to optimize the extracted frames and how to merge them.</p>
     <p>Figuring out which frames need to be extracted is critical. We need to make sure that we have enough frames to assemble a complete image. (This may involve deciding how much missing areas are acceptable.) At the same time, extracting too many frames could result in too much redundant information and could increase computational complexity beyond an acceptable level.</p>
     <p>Processing extracted frames may provide additional details in the images that may improve the quality and performance of the merging process.</p>
     <p>The design of the merging process will be critical to ensure the process completes in a timely manner and accurately assembles the extracted frames.</p>
+    <hr/>
     <h4>Why we want to solve this problem</h4>
     <p>We have selected a paper [1] that implements a solution to the problem we would like to solve. A high level overview of the authors’ implementation is as follows:</p>
     <ol>
@@ -79,6 +81,7 @@
     </ol>
     <p>Minimally we would like to complete the implementation described in the paper and if enough time, tackle one of the open questions listed above.</p>
     <p>[1] Minchen Zhu, Weizhi Wang, Binghan Liu, and Jingshan Huang, “Efficient video panoramic image stitching based on an improved selection of harris corners and a multiple-constraint corner matching,” PloS one, vol. 8, no. 12, pp. e81182, 2013.<a href="https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0081182&type=printable">https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0081182&type=printable</a></p>
+    <hr/>
     <h4>Project Timeline</h4>
     <table class="timeline">
       <tr>
