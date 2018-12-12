@@ -16,7 +16,6 @@ def findDimensions(img, H):
     w2, h2 = img.shape[:2]
     img2_dims_temp = np.float32([[0, 0], [0, w2], [h2, w2], [h2, 0]]).reshape(-1, 1, 2)
     img_dims = cv2.perspectiveTransform(img2_dims_temp, H)
-
     [min_x, min_y] = np.int32(img_dims.min(axis=0).ravel() - 0.5)
     [max_x, max_y] = np.int32(img_dims.max(axis=0).ravel() + 0.5)
 
@@ -24,7 +23,6 @@ def findDimensions(img, H):
 
 
 def stitch(imgs, H_map):
-    # calculate panorama size
     tot_min_x = np.inf
     tot_min_y = np.inf
     tot_max_x = -np.inf
@@ -34,8 +32,7 @@ def stitch(imgs, H_map):
 
     for i in range(0, len(H_map)):
         curr_img = imgs[i]
-        (min_x, min_y, max_x, max_y) = findDimensions(curr_img, np.linalg.inv(H_map[i]))
-
+        (min_x, min_y, max_x, max_y) = findDimensions(curr_img, (H_map[i]))
         tot_min_x = np.floor(np.minimum(min_x, tot_min_x))
         tot_min_y = np.floor(np.minimum(min_y, tot_min_y))
         tot_max_x = np.ceil(np.maximum(max_x, tot_max_x))
@@ -54,7 +51,7 @@ def stitch(imgs, H_map):
     for i in range(0, num_images):
         img = imgs[i]
 
-        (min_x, min_y, max_x, max_y) = findDimensions(img, np.linalg.inv(H_map[i]))
+        (min_x, min_y, max_x, max_y) = findDimensions(img, (H_map[i]))
 
         max_x = max(tot_max_x, max_x)
         max_y = max(tot_max_y, max_y)
@@ -66,11 +63,9 @@ def stitch(imgs, H_map):
 
         curr_size = (int(curr_width), int(curr_height))
 
-
-        new_img = cv2.warpPerspective(imgs[i], np.linalg.inv(H_map[i]), curr_size)
+        new_img = cv2.warpPerspective(imgs[i], (H_map[i]), curr_size)
         new_img = new_img.astype("uint8")
         place_image(final_img, new_img)
-
         warped.append(new_img)
 
     return final_img
