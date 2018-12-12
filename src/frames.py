@@ -57,15 +57,15 @@ def frames(video):
         ret, frame = cap.read()
         if ret==True & ((frame_count-(frame_interval*i)-1) > 0):
             output.append(frame)
-            cv2.imwrite('file'+str(i)+'.jpg', output[i])
+            #cv2.imwrite('file'+str(i)+'.jpg', output[i])
         else:
             if left_to_right:
                 cap.set(cv2.CAP_PROP_POS_FRAMES, frame_count)
                 ret, frame = cap.read()
                 output.append(frame)
-                cv2.imwrite('file'+str(i)+'.jpg', output[i])
+                #cv2.imwrite('file'+str(i)+'.jpg', output[i])
             break
         i=i+1
+    return output
 
-
-frames(sys.argv[1])
+#frames(sys.argv[1])

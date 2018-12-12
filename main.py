@@ -5,24 +5,24 @@ from src import match
 from src import stitch
 import numpy as np
 from src import input
+from src import frames
 
 
-def main():
+def main(video):
     feature_method = "sift"
 
     # read in images
-    imgs = []
+    imgs = frames.frames(video)
     gray_imgs = []
     first_arg = True
-    for img_name in sys.argv:
+    for iImg in imgs:
         if first_arg:
             first_arg = False
         else:
-            img = cv2.imread(img_name)
-            img = input.cylindricalWarp(img)
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA)
-            gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            imgs.append(img)
+            iImg = input.cylindricalWarp(iImg)
+            iImg = cv2.cvtColor(iImg, cv2.COLOR_BGR2BGRA)
+            gray_img = cv2.cvtColor(iImg, cv2.COLOR_BGR2GRAY)
+            imgs.append(iImg)
             gray_imgs.append(gray_img)
 
     num_images = len(imgs)
